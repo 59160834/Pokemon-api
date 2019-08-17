@@ -1,3 +1,4 @@
+//https://pokemon.fandom.com/wiki/List_of_Pok%C3%A9mon
 /*
     1.ดึง list Pokemon ออกมา --> GET
         /pokemon -> list all pokemon http://localhost:3000/pokemon
@@ -19,6 +20,7 @@ class Pokemon {
     constructor(name, type) {
         this.name = name
         this.type = type
+        this.type2 = null
         this.id = null
     }
 }
@@ -31,10 +33,18 @@ app.get("/pokemon", (req, res) => res.send(pokemon));
 
 /* -----------------Method POST--------------------------*/
 app.post('/pokemon', (req, res) => {
+    if(issufficientParam(req.body.name) || issufficientParam(req.body.type)){
+        res.status(400).send({error:'Insufficient parameters: name and type are required parameter'})
+        return
+    }//client error case >> http status code 400 up 
+    
     let p = createPokemon(req.body.name, req.body.type)
     pokemon.push(p)
     res.sendStatus(201)
 })
+function issufficientParam(v){
+    return v !== null || v !== '' || v !== undefined
+}
 function gennewId(num) {
     let newId = num + 1
     return newId
@@ -44,3 +54,42 @@ function createPokemon(name, type) {
     p.id = gennewId(pokemon.length)  
     return p
 }
+/*--------------------------------------------------------*/
+// GET http://localhost:3000/pokemon/1
+//input = ID >> return pokemon detail
+app.get("/pokemon/:id", (req, res) => {
+    let id = req.params.id
+    let p = pokemon[id -1]
+    //let p = pokemon[0]
+    res.send(p)
+})
+//Add type2 
+app.put('/pokemon/:id', (req,res) => {
+    //check ว่ามี ID นี้มั้ย && มี type2 มั้ยที่ส่งมา
+    if(!issufficientParam(req.body.type2)) //but not type2 result = false 
+    {
+        res.status(400).send({error:'Insufficient parameters: type2 is required parameter'})
+        return
+    }
+    if(!issufficientParam(req.param.id))
+    {
+        res.status(400).send({error:'Insufficient parameters: type2 is required parameter'})
+        return
+    }
+    let id = req.params.id
+
+    //Check input No. pokemon
+    let p = pokemon[id -1]
+    if(p === undefined)
+    {
+        res.status(400).send({error: 'Cannot update pokemon: Pokemon is not found'})
+        return
+    }//Only for this case
+
+    p.type2 = req.body.type2
+    // res.send(p)
+
+    pokemon[id-1] = p //update & save in index
+    res.sendStatus(200) 
+    // status 204 >> PUT POST DELETE >> but notsure use 200 
+})
