@@ -4,7 +4,7 @@
     2.เพิ่ม list --> POST
         /pokemon -> add pokemon to list
 */
-
+/* -----------------Start Express JS-------------------- */
 const express = require("express"); //import library
 const app = express(); //create express app
 const port = 3000; //port
@@ -13,25 +13,34 @@ app.get("/", (req, res) => res.send("Hello World!")); //create end point
 
 app.listen(port, () => console.log(`Example app listening on port ${port}!`)); //เรียกใช้ web ให้ทำงาน , function show on board
 
-/* -----------------Start Express JS-------------------- */
-app.use(express.json())
-
-let pokemon = [
-    {name:'Horsea',type:'Water'},
-    {name:'Ditto',type:'Normal'},
-    {name:'Dratini',type:'Dragon'}
-]
-app.get("/pokemon", (req, res)  => res.send(pokemon));
-
 /* ------------------Method GET ------------------------*/
+app.use(express.json())
+class Pokemon {
+    constructor(name, type) {
+        this.name = name
+        this.type = type
+        this.id = null
+    }
+}
+let pokemon = []
+    pokemon.push(createPokemon('Pikachu', 'Bug')),
+    pokemon.push(createPokemon('Arcanine', 'Fire')),
+    pokemon.push(createPokemon('Horsea','Water'))
 
-app.post('/pokemon',(req,res) => {
-    //req -> request, res -> response
-    //console.log(req.body)
-    //res.send(req.body)  
-    pokemon.push(req.body)
+app.get("/pokemon", (req, res) => res.send(pokemon));
+
+/* -----------------Method POST--------------------------*/
+app.post('/pokemon', (req, res) => {
+    let p = createPokemon(req.body.name, req.body.type)
+    pokemon.push(p)
     res.sendStatus(201)
-
 })
-
-/* -----------------Method POST--------------------------*/ 
+function gennewId(num) {
+    let newId = num + 1
+    return newId
+}
+function createPokemon(name, type) {
+    let p = new Pokemon(name, type)
+    p.id = gennewId(pokemon.length)  
+    return p
+}
