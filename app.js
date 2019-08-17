@@ -45,6 +45,11 @@ app.post('/pokemon', (req, res) => {
 function issufficientParam(v){
     return v !== null || v !== '' || v !== undefined
 }
+
+function isPokemonExsited(id)
+{
+    return pokemon[id-1] !== undefined && pokemon[id-1] !== null
+}
 function gennewId(num) {
     let newId = num + 1
     return newId
@@ -73,7 +78,7 @@ app.put('/pokemon/:id', (req,res) => {
     }
     if(!issufficientParam(req.param.id))
     {
-        res.status(400).send({error:'Insufficient parameters: type2 is required parameter'})
+        res.status(400).send({error:'Insufficient parameters: id is required parameter'})
         return
     }
     let id = req.params.id
@@ -93,3 +98,20 @@ app.put('/pokemon/:id', (req,res) => {
     res.sendStatus(200) 
     // status 204 >> PUT POST DELETE >> but notsure use 200 
 })
+
+/*-----------------Method Delete------------------*/
+app.delete('/pokemon/:id', (req, res) => { // size ของ array ไม่ลด >> ID จะไม่ซ้ำ
+    if(!issufficientParam(req.params.id))
+    {
+        res.status(400).send({error:'Insufficient parameters: id is required parameter'})
+        return 
+    }
+    let id = req.params.id
+    // let p = pokemon[id-1]
+    if(!isPokemonExsited(id)){
+        res.status(400).send({error: 'Cannot delete pokemon: Pokemon is not found'})
+        return
+    }
+    delete pokemon[id-1]
+    res.sendStatus(204) // delete operation is success
+}) 
